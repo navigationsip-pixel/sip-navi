@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapplic-Style Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+        
+        /* Top Toolbar */
+        .toolbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .toolbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-right: auto;
+        }
+        
+        .tool-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            color: #555;
+        }
+        
+        .tool-btn:hover {
+            border-color: #4a90e2;
+            color: #4a90e2;
+        }
+        
+        .tool-btn.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        
+        .tool-icon {
+            font-size: 1rem;
+        }
+        
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: #e0e0e0;
+        }
+        
+        /* Main Container */
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            height: calc(100vh - 60px);
+            background: white;
+        }
+        
+        /* Left Sidebar - Floors */
+        .left-sidebar {
+            border-right: 1px solid #e0e0e0;
+            background: #fafafa;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+        
+        .floor-item {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        
+        .floor-item:hover {
+            border-color: #4a90e2;
+        }
+        
+        .floor-item.active {
+            border-color: #4a90e2;
+            background: #e8f4fd;
+        }
+        
+        .floor-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .floor-count {
+            font-size: 0.75rem;
+            color: #888;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .floor-delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1;
+            opacity: 0;
+            transition: all 0.2s;
+            margin-left: 8px;
+            padding: 0;
+        }
+        
+        .floor-upload-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            line-height: 1;
+            opacity: 0;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        
+        .floor-item:hover .floor-delete-btn,
+        .floor-item:hover .floor-upload-btn {
+            opacity: 1;
+        }
+        
+        .floor-delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.15);
+        }
+        
+        .floor-upload-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+        
+        .floor-item.has-svg .floor-upload-btn {
+            background: #3b82f6;
+        }
+        
+        .floor-item.has-svg::before {
+            content: '✓';
+            position: absolute;
+            left: 8px;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .add-floor-btn {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #d0d0d0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #888;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .add-floor-btn:hover {
+            border-color: #4a90e2;
+            color: #4a90e2;
+        }
+        
+        /* Canvas Area */
+        .canvas-area {
+            position: relative;
+            background: #f9f9f9;
+            overflow: hidden;
+            cursor: grab;
+        }
+        
+        .canvas-area.dragging {
+            cursor: grabbing;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            width: fit-content;
+            height: fit-content;
+            transform-origin: 0 0;
+        }
+        
+        #editorCanvas {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: crosshair;
+            display: block;
+        }
+        
+        .canvas-crosshair {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .canvas-crosshair-h {
+            width: 100%;
+            height: 1px;
+            background: #4a90e2;
+        }
+        
+        .canvas-crosshair-v {
+            width: 1px;
+            height: 100%;
+            background: #4a90e2;
+        }
+        
+        /* Zoom Controls */
+        .zoom-widget {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .zoom-btn:last-child {
+            border-bottom: none;
+        }
+        
+        .zoom-btn:hover {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        /* Right Sidebar - Properties */
+        .right-sidebar {
+            border-left: 1px solid #e0e0e0;
+            background: white;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .properties-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .property-group {
+            margin-bottom: 20px;
+        }
+        
+        .property-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 6px;
+            display: block;
+        }
+        
+        .property-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .property-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        .property-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .property-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .property-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+        
+        .btn-primary:hover {
+            background: #3a7bc8;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .node-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+        
+        .node-list-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .node-list-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .node-list-item.selected {
+            background: #e8f4fd;
+        }
+        
+        .node-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        /* Pin/Node Styles on Canvas */
+        .pin-node {
+            cursor: move;
+            transition: all 0.2s;
+        }
+        
+        .pin-node:hover .pin-circle {
+            r: 14;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .pin-node.selected .pin-circle {
+            stroke-width: 4;
+            filter: drop-shadow(0 2px 6px rgba(74, 144, 226, 0.4));
+        }
+        
+        .pin-connecting {
+            opacity: 0.5;
+        }
+
+        /* Emergency node pins — red outer ring */
+        .pin-node.pin-emergency .pin-circle {
+            stroke: #ef4444;
+            stroke-width: 4;
+            filter: drop-shadow(0 0 5px rgba(239,68,68,0.6));
+        }
+
+        /* Emergency badge in node list */
+        .node-emergency-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: #ef4444;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        
+        /* Connection Lines */
+        .connection-line {
+            stroke: #e74c3c;
+            stroke-width: 3;
+            fill: none;
+            pointer-events: stroke;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .connection-line:hover {
+            stroke-width: 5;
+            stroke: #c0392b;
+        }
+        
+        .connection-temp {
+            stroke: #4a90e2;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+            fill: none;
+            pointer-events: none;
+        }
+        
+        /* Drawn Path Lines (hallways) */
+        .path-line {
+            stroke: #10b981;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: stroke;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .path-line:hover {
+            stroke-width: 6;
+            stroke: #059669;
+        }
+        
+        .path-drawing {
+            stroke: #10b981;
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 5,5;
+            pointer-events: none;
+        }
+        
+        .path-point {
+            fill: #10b981;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .path-point:hover {
+            fill: #059669;
+            r: 6;
+        }
+        
+        /* Instructions overlay */
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .instructions.show {
+            opacity: 1;
+        }
+        
+        /* Export Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-title">🗺️ Indoor Map Editor</div>
+        
+        <button class="tool-btn active" id="pinTool" onclick="setTool('pin')">
+            <span class="tool-icon">📍</span> Add Pin
+        </button>
+        
+        <button class="tool-btn" id="drawTool" onclick="setTool('draw')">
+            <span class="tool-icon">✏️</span> Draw Path
+        </button>
+        
+        <button class="tool-btn" id="connectTool" onclick="setTool('connect')">
+            <span class="tool-icon">🔗</span> Connect
+        </button>
+        
+        <button class="tool-btn" id="selectTool" onclick="setTool('select')">
+            <span class="tool-icon">👆</span> Select
+        </button>
+        
+        <div class="divider"></div>
+        
+        <button class="tool-btn" id="orthogonalToggle" onclick="toggleOrthogonal()">
+            <span class="tool-icon">📐</span> <span id="orthogonalLabel">90° Mode: OFF</span>
+        </button>
+        
+        <div class="divider"></div>
+        
+        <button class="tool-btn" onclick="uploadSVG()">
+            <span class="tool-icon">📁</span> Upload SVG
+        </button>
+        
+        <button class="tool-btn" onclick="importData()">
+            <span class="tool-icon">📥</span> Import
+        </button>
+        
+        <button class="tool-btn" onclick="importCompleteData()" style="background: #3b82f6;">
+            <span class="tool-icon">📂</span> Import Complete
+        </button>
+        
+        <button class="tool-btn" onclick="copyFloorNodes()">
+            <span class="tool-icon">📋</span> Copy Floor
+        </button>
+        
+        <button class="tool-btn" onclick="exportCode()">
+            <span class="tool-icon">💾</span> Export Code
+        </button>
+        
+        <button class="tool-btn" onclick="exportWithSVGs()" style="background: #10b981;">
+            <span class="tool-icon">📦</span> Export with SVGs
+        </button>
+        
+        <div class="divider"></div>
+        
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 0.8rem; color: #666; white-space: nowrap;">Node #:</span>
+            <input type="number" id="nodeCounterInput" value="1" min="1"
+                style="width: 70px; padding: 6px 8px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem;"
+                title="Set the starting number for auto-generated waypoint node IDs"
+                onchange="setNodeCounter(this.value)">
+            <button class="tool-btn" onclick="setNodeCounter(document.getElementById('nodeCounterInput').value)" title="Apply node counter">
+                <span class="tool-icon">✅</span> Set
+            </button>
+        </div>
+        
+        <input type="file" id="svgFileInput" accept=".svg" style="display: none;">
+        <input type="file" id="floorSVGInput" accept=".svg" style="display: none;">
+    </div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Floors</div>
+                <div id="floorsList">
+                    <div class="floor-item active" data-floor="mainjhsMap" onclick="switchFloor('mainjhsMap')">
+                        <span class="floor-name">Floor 1 (Main JHS)</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="floor-count" id="mainjhsMap-count">0</span>
+                            <button class="floor-upload-btn" onclick="event.stopPropagation(); uploadFloorSVG('mainjhsMap')" title="Upload SVG for this floor">📁</button>
+                            <button class="floor-delete-btn" onclick="event.stopPropagation(); deleteFloor('mainjhsMap')" title="Delete floor">×</button>
+                        </div>
+                    </div>
+                    <div class="floor-item" data-floor="groundjhsMap" onclick="switchFloor('groundjhsMap')">
+                        <span class="floor-name">Ground Floor</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span class="floor-count" id="groundjhsMap-count">0</span>
+                            <button class="floor-upload-btn" onclick="event.stopPropagation(); uploadFloorSVG('groundjhsMap')" title="Upload SVG for this floor">📁</button>
+                            <button class="floor-delete-btn" onclick="event.stopPropagation(); deleteFloor('groundjhsMap')" title="Delete floor">×</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-floor-btn" onclick="addNewFloor()">+ Add Floor</button>
+            </div>
+        </div>
+        
+        <!-- Canvas Area -->
+        <div class="canvas-area" id="canvasArea">
+            <div class="instructions" id="instructions">Click to place pin</div>
+            
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <svg id="editorCanvas" width="2000" height="1600" viewBox="0 0 2000 1600">
+                    <!-- Background Layer -->
+                    <g id="bgLayer"></g>
+                    
+                    <!-- Grid -->
+                    <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="2000" height="1600" fill="url(#grid)"/>
+                    
+                    <!-- Drawn Paths Layer (hallways) -->
+                    <g id="pathsLayer"></g>
+                    
+                    <!-- Connections Layer -->
+                    <g id="connectionsLayer"></g>
+                    
+                    <!-- Temp Connection Line -->
+                    <line id="tempLine" class="connection-temp" style="display: none;"/>
+                    
+                    <!-- Temp Path Drawing -->
+                    <polyline id="tempPath" class="path-drawing" style="display: none;"/>
+                    
+                    <!-- Pins Layer -->
+                    <g id="pinsLayer"></g>
+                </svg>
+            </div>
+            
+            <!-- Zoom Controls -->
+            <div class="zoom-widget">
+                <button class="zoom-btn" onclick="zoomIn()">+</button>
+                <button class="zoom-btn" onclick="resetZoom()">⊙</button>
+                <button class="zoom-btn" onclick="zoomOut()">−</button>
+            </div>
+            
+            <!-- Ctrl+Drag hint -->
+            <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); color: white; font-size: 0.75rem; padding: 5px 10px; border-radius: 6px; pointer-events: none; user-select: none;">
+                Hold <kbd style="background: rgba(255,255,255,0.2); padding: 1px 5px; border-radius: 3px; font-family: monospace;">Ctrl</kbd> + drag to pan
+            </div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="properties-title">Properties</div>
+            
+            <div id="propertiesPanel">
+                <div class="property-group">
+                    <label class="property-label">Node ID 
+                        <span style="color: #ef4444; font-size: 0.8rem;">⚠️ Changing this will break connections!</span>
+                    </label>
+                    <input type="text" class="property-input" id="nodeId" placeholder="e.g., registrar, g1, room-101">
+                    <small style="font-size: 0.75rem; color: #666;">
+                        If you change this ID, you must also update all connections that reference it!
+                    </small>
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">Name</label>
+                    <input type="text" class="property-input" id="nodeName" placeholder="e.g., Room 101">
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">Type</label>
+                    <select class="property-select" id="nodeType" onchange="updatePinColor()">
+                        <option value="classroom">Classroom</option>
+                        <option value="office">Office</option>
+                        <option value="restroom">Restroom</option>
+                        <option value="stairs">Stairs</option>
+                        <option value="escalator">Escalator</option>
+                        <option value="elevator">Elevator</option>
+                        <option value="entrance">Entrance</option>
+                        <option value="emergency">Emergency Exit</option>
+                        <option value="waypoint">Waypoint</option>
+                    </select>
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">Floor Map ID</label>
+                    <input type="text" class="property-input" id="nodeFloor" placeholder="e.g., mainjhsMap" value="mainjhsMap">
+                    <small style="font-size: 0.75rem; color: #666;">Floor identifier WITH 'Map' suffix</small>
+                </div>
+                
+                <div class="property-group">
+                    <label class="property-label">View Name</label>
+                    <input type="text" class="property-input" id="nodeView" placeholder="e.g., mainjhs" value="mainjhs">
+                    <small style="font-size: 0.75rem; color: #666;">View name WITHOUT 'Map' suffix</small>
+                </div>
+                
+                <div class="property-group" id="floorConnectionGroup" style="display: none;">
+                    <label class="property-label">Connects to Floor</label>
+                    <input type="text" class="property-input" id="connectsToFloor" placeholder="e.g., groundjhsMap">
+                    <small style="font-size: 0.75rem; color: #666;">WITH 'Map' suffix</small>
+                </div>
+                
+                <div class="property-group" id="floorConnectionViewGroup" style="display: none;">
+                    <label class="property-label">Connects to View</label>
+                    <input type="text" class="property-input" id="connectsToView" placeholder="e.g., groundjhs">
+                    <small style="font-size: 0.75rem; color: #666;">WITHOUT 'Map' suffix</small>
+                </div>
+                
+                <div class="property-checkbox">
+                    <input type="checkbox" id="nodeHidden">
+                    <label class="property-label" style="margin: 0;">Hidden (Waypoint)</label>
+                </div>
+                
+                <button class="btn-primary" onclick="updateSelectedNode()">Update Node</button>
+                <button class="btn-primary btn-danger" onclick="deleteSelectedNode()">Delete Node</button>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <div class="sidebar-title">Nodes List</div>
+                <div class="node-list" id="nodesList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-title">Export Code</div>
+            <button class="btn-primary" onclick="copyExportCode()" style="margin-bottom: 16px;">📋 Copy to Clipboard</button>
+            <div class="code-output" id="exportCode"></div>
+            <button class="btn-primary" onclick="closeModal('exportModal')" style="margin-top: 16px;">Close</button>
+        </div>
+    </div>
+    
+    <!-- Import Modal -->
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-title">Import Data</div>
+            <p style="color: #666; margin-bottom: 16px; font-size: 0.9rem;">
+                Paste your locations and connections arrays below:
+            </p>
+            
+            <div class="property-group">
+                <label class="property-label">Locations Array</label>
+                <textarea id="importLocations" class="property-input" 
+                    style="min-height: 150px; font-family: monospace; font-size: 0.85rem;"
+                    placeholder="[{id: 'node-1', name: 'Room 1', type: 'classroom', ...}]"></textarea>
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Connections Array</label>
+                <textarea id="importConnections" class="property-input" 
+                    style="min-height: 100px; font-family: monospace; font-size: 0.85rem;"
+                    placeholder="[['node-1', 'node-2'], ...]"></textarea>
+            </div>
+            
+            <button class="btn-primary" onclick="processImport()">📥 Import Data</button>
+            <button class="btn-primary" onclick="closeModal('importModal')" style="margin-top: 8px; background: #6b7280;">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Copy Floor Modal -->
+    <div class="modal" id="copyFloorModal">
+        <div class="modal-content">
+            <div class="modal-title">📋 Copy Nodes to Another Floor</div>
+            <p style="color: #666; margin-bottom: 16px; font-size: 0.9rem;">
+                This will copy all nodes and connections from one floor to another floor, keeping the same X,Y positions.
+            </p>
+            
+            <div class="property-group">
+                <label class="property-label">Copy FROM Floor:</label>
+                <select class="property-select" id="copyFromFloor">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Copy TO Floor (Map ID):</label>
+                <input type="text" class="property-input" id="copyToFloor" placeholder="e.g., floor2Map">
+                <small style="font-size: 0.75rem; color: #666;">Enter new floor WITH 'Map' suffix</small>
+            </div>
+            
+            <div class="property-group">
+                <label class="property-label">Copy TO View:</label>
+                <input type="text" class="property-input" id="copyToView" placeholder="e.g., floor2">
+                <small style="font-size: 0.75rem; color: #666;">Enter new view WITHOUT 'Map' suffix</small>
+            </div>
+            
+            <div class="property-checkbox">
+                <input type="checkbox" id="copyConnections" checked>
+                <label class="property-label" style="margin: 0;">Also copy connections between nodes</label>
+            </div>
+            
+            <div class="property-checkbox">
+                <input type="checkbox" id="updateNodeIds" checked>
+                <label class="property-label" style="margin: 0;">Update node IDs (add floor suffix to avoid duplicates)</label>
+            </div>
+            
+            <div style="background: #fef3c7; border: 1px solid #fbbf24; padding: 12px; border-radius: 6px; margin: 16px 0;">
+                <strong style="color: #92400e;">📝 Example:</strong>
+                <div style="color: #78350f; font-size: 0.85rem; margin-top: 8px;">
+                    • FROM: mainjhsMap → TO: floor2Map<br>
+                    • Node "node-1" becomes "node-1-f2" (if update IDs is checked)<br>
+                    • Keeps same X,Y positions<br>
+                    • Creates floor tab if it doesn't exist
+                </div>
+            </div>
+            
+            <button class="btn-primary" onclick="processCopyFloor()">📋 Copy Nodes</button>
+            <button class="btn-primary" onclick="closeModal('copyFloorModal')" style="margin-top: 8px; background: #6b7280;">Cancel</button>
+        </div>
+    </div>
+    
+    <script>
+        // State
+        let currentTool = 'pin';
+        let currentFloor = 'mainjhsMap';
+        let nodes = [];
+        let connections = [];
+        let paths = []; // Drawn hallway paths
+        let selectedNode = null;
+        let connectingFrom = null;
+        let nodeCounter = 1;
+        
+        function setNodeCounter(value) {
+            const n = parseInt(value);
+            if (!isNaN(n) && n >= 1) {
+                nodeCounter = n;
+                document.getElementById('nodeCounterInput').value = n;
+                document.getElementById('nodeCounterInput').style.borderColor = '#10b981';
+                setTimeout(() => { document.getElementById('nodeCounterInput').style.borderColor = '#e0e0e0'; }, 1000);
+            }
+        }
+        let floorCounter = 1;
+        let scale = 1;
+        let panX = 0;
+        let panY = 0;
+        let isDraggingNode = false;
+        let isPanning = false;
+        let isDraggingCanvas = false;
+        let hasDragged = false;
+        let draggedNode = null;
+        let isDrawingPath = false;
+        let currentPathPoints = [];
+        let pathCounter = 1;
+        let orthogonalMode = false; // 90-degree paths
+        let canvasStartX = 0;
+        let canvasStartY = 0;
+        let isCtrlHeld = false;
+        
+        // Track Ctrl key
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Control') isCtrlHeld = true;
+            if (e.key === 'Escape' && currentTool === 'draw' && isDrawingPath) finishPath();
+        });
+        document.addEventListener('keyup', (e) => { if (e.key === 'Control') isCtrlHeld = false; });
+        
+        // Track SVG backgrounds for each floor
+        let floorBackgrounds = {};
+        let currentUploadingFloor = null;
+        
+        // Color mapping
+        const colorMap = {
+            classroom: '#3b82f6',
+            office: '#8b5cf6',
+            restroom: '#06b6d4',
+            stairs: '#f59e0b',
+            escalator: '#f59e0b',
+            elevator: '#10b981',
+            entrance: '#22c55e',
+            emergency: '#ef4444',
+            waypoint: '#6b7280'
+        };
+        
+        const canvasArea = document.getElementById('canvasArea');
+        const canvasWrapper = document.getElementById('canvasWrapper');
+        
+        // Toggle orthogonal mode
+        function toggleOrthogonal() {
+            orthogonalMode = !orthogonalMode;
+            const label = document.getElementById('orthogonalLabel');
+            const btn = document.getElementById('orthogonalToggle');
+            
+            if (orthogonalMode) {
+                label.textContent = '90° Mode: ON';
+                btn.classList.add('active');
+            } else {
+                label.textContent = '90° Mode: OFF';
+                btn.classList.remove('active');
+            }
+        }
+        
+        // Make orthogonal path (90-degree angles only)
+        function makeOrthogonalPath(points) {
+            if (points.length < 2 || !orthogonalMode) return points;
+            
+            const orthPoints = [points[0]];
+            
+            for (let i = 1; i < points.length; i++) {
+                const prev = orthPoints[orthPoints.length - 1];
+                const curr = points[i];
+                
+                const dx = Math.abs(curr.x - prev.x);
+                const dy = Math.abs(curr.y - prev.y);
+                
+                if (dx > 5 && dy > 5) {
+                    // Add intermediate point to create 90-degree turn
+                    if (dx > dy) {
+                        orthPoints.push({ x: curr.x, y: prev.y });
+                    } else {
+                        orthPoints.push({ x: prev.x, y: curr.y });
+                    }
+                }
+                
+                orthPoints.push(curr);
+            }
+            
+            return orthPoints;
+        }
+        
+        // Canvas dragging
+        let dragStartX = 0;
+        let dragStartY = 0;
+        
+        canvasArea.addEventListener('mousedown', (e) => {
+            if (e.button === 0 && (e.target === canvasArea || e.target.id === 'editorCanvas')) {
+                const isClickingBackground = e.target === canvasArea || 
+                    (e.target.id === 'editorCanvas' && currentTool !== 'pin' && currentTool !== 'draw');
+                
+                // Allow drag if clicking background OR if Ctrl is held
+                if (isClickingBackground || isCtrlHeld) {
+                    isDraggingCanvas = true;
+                    hasDragged = false;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    canvasStartX = e.clientX - panX;
+                    canvasStartY = e.clientY - panY;
+                    canvasArea.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }
+        });
+        
+        canvasArea.addEventListener('mousemove', (e) => {
+            if (isDraggingCanvas) {
+                const dx = Math.abs(e.clientX - dragStartX);
+                const dy = Math.abs(e.clientY - dragStartY);
+                if (dx > 3 || dy > 3) {
+                    hasDragged = true;
+                }
+                panX = e.clientX - canvasStartX;
+                panY = e.clientY - canvasStartY;
+                updateCanvasTransform();
+            }
+        });
+        
+        canvasArea.addEventListener('mouseup', () => {
+            if (isDraggingCanvas) {
+                isDraggingCanvas = false;
+                canvasArea.classList.remove('dragging');
+                // Reset hasDragged after a short delay
+                setTimeout(() => { hasDragged = false; }, 50);
+            }
+        });
+        
+        canvasArea.addEventListener('mouseleave', () => {
+            if (isDraggingCanvas) {
+                isDraggingCanvas = false;
+                canvasArea.classList.remove('dragging');
+                setTimeout(() => { hasDragged = false; }, 50);
+            }
+        });
+        
+        // Mouse wheel zoom
+        canvasArea.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            const rect = canvasArea.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            // Mouse position relative to canvas
+            const canvasX = (mouseX - panX) / scale;
+            const canvasY = (mouseY - panY) / scale;
+            
+            // Update scale
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.max(0.1, Math.min(5, scale * delta));
+            
+            // Adjust pan to keep mouse position fixed
+            panX = mouseX - canvasX * newScale;
+            panY = mouseY - canvasY * newScale;
+            scale = newScale;
+            
+            updateCanvasTransform();
+        });
+        
+        function updateCanvasTransform() {
+            canvasWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        }
+        
+        // Initialize canvas position - center it
+        function initializeCanvas() {
+            const rect = canvasArea.getBoundingClientRect();
+            panX = (rect.width - 2000 * scale) / 2;
+            panY = (rect.height - 1600 * scale) / 2;
+            updateCanvasTransform();
+        }
+        
+        // Set tool
+        function setTool(tool) {
+            currentTool = tool;
+            
+            // Reset drawing state
+            isDrawingPath = false;
+            currentPathPoints = [];
+            document.getElementById('tempPath').style.display = 'none';
+            
+            // Update buttons
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            const toolBtn = document.getElementById(tool + 'Tool');
+            if (toolBtn) toolBtn.classList.add('active');
+            
+            // Update cursor and instructions
+            const canvas = document.getElementById('editorCanvas');
+            const instructions = document.getElementById('instructions');
+            
+            if (tool === 'pin') {
+                canvas.style.cursor = 'crosshair';
+                instructions.textContent = 'Click to place pin';
+                instructions.classList.add('show');
+            } else if (tool === 'draw') {
+                canvas.style.cursor = 'crosshair';
+                instructions.textContent = 'Click to start drawing path, double-click or press ESC to finish';
+                instructions.classList.add('show');
+            } else if (tool === 'connect') {
+                canvas.style.cursor = 'pointer';
+                instructions.textContent = 'Click first pin, then click second pin to connect';
+                instructions.classList.add('show');
+            } else if (tool === 'select') {
+                canvas.style.cursor = 'default';
+                instructions.textContent = 'Click pin to select, drag to move';
+                instructions.classList.add('show');
+            }
+            
+            setTimeout(() => instructions.classList.remove('show'), 3000);
+        }
+        
+        // Canvas click handler
+        document.getElementById('editorCanvas').addEventListener('click', (e) => {
+            if (isDraggingNode || isDraggingCanvas || hasDragged || isCtrlHeld) return;
+            
+            const rect = e.target.getBoundingClientRect();
+            
+            // Convert screen coordinates to canvas coordinates accounting for zoom and pan
+            const canvasX = (e.clientX - rect.left) / scale;
+            const canvasY = (e.clientY - rect.top) / scale;
+            
+            // Clamp to canvas bounds
+            const x = Math.max(0, Math.min(2000, Math.round(canvasX)));
+            const y = Math.max(0, Math.min(1600, Math.round(canvasY)));
+            
+            if (currentTool === 'pin') {
+                addPin(x, y);
+            } else if (currentTool === 'draw') {
+                addPathPoint(x, y);
+            }
+        });
+        
+        // Double-click to finish path
+        document.getElementById('editorCanvas').addEventListener('dblclick', (e) => {
+            if (currentTool === 'draw' && isDrawingPath) {
+                e.preventDefault();
+                finishPath();
+            }
+        });
+        
+        // ESC to cancel path drawing
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && currentTool === 'draw' && isDrawingPath) {
+                finishPath();
+            }
+        });        
+        // Add pin
+        function addPin(x, y) {
+            const customId = document.getElementById('nodeId').value.trim();
+            let id;
+            
+            if (customId) {
+                // Check if custom ID already exists
+                const duplicate = nodes.find(n => n.id === customId);
+                if (duplicate) {
+                    alert(`❌ Error: ID "${customId}" already exists! Choose a different ID or leave blank for auto-generation.`);
+                    return;
+                }
+                id = customId;
+            } else {
+                // Auto-generate ID
+                id = `node-${nodeCounter++}`;
+                document.getElementById('nodeCounterInput').value = nodeCounter;
+            }
+            
+            const name = document.getElementById('nodeName').value || `node-${nodeCounter - 1}`;
+            const type = document.getElementById('nodeType').value;
+            const floor = document.getElementById('nodeFloor').value || 'mainjhsMap';
+            const view = document.getElementById('nodeView').value || 'mainjhs';
+            const hidden = document.getElementById('nodeHidden').checked;
+            const connectsToFloor = document.getElementById('connectsToFloor').value;
+            const connectsToView = document.getElementById('connectsToView').value;
+            
+            const node = {
+                id,
+                name,
+                type,
+                x,
+                y,
+                floor,
+                view,
+                hidden
+            };
+            
+            if (connectsToFloor) {
+                node.connectsToFloor = connectsToFloor;
+            }
+            
+            if (connectsToView) {
+                node.connectsToView = connectsToView;
+            }
+            
+            nodes.push(node);
+            
+            // Auto-pair for stairs/escalators/elevators/emergency exits
+            if (connectsToFloor && (type === 'stairs' || type === 'escalator' || type === 'elevator' || type === 'emergency')) {
+                const pairId = `${id}-pair`;
+                
+                const pairNode = {
+                    id: pairId,
+                    name: `${name} (from ${view})`,
+                    type,
+                    x,
+                    y,
+                    floor: connectsToFloor,
+                    view: connectsToView || connectsToFloor.replace('Map', ''),
+                    hidden,
+                    connectsToFloor: floor,
+                    connectsToView: view,
+                    floorDirection: 'both'
+                };
+                nodes.push(pairNode);
+                connections.push([id, pairId]);
+            }
+            
+            renderPins();
+            updateNodesList();
+            updateFloorCounts();
+            
+            // Clear form
+            document.getElementById('nodeId').value = '';
+            document.getElementById('nodeName').value = '';
+        }
+        
+        // Path drawing functions
+        function addPathPoint(x, y) {
+            if (!isDrawingPath) {
+                isDrawingPath = true;
+                currentPathPoints = [];
+            }
+            
+            currentPathPoints.push({x, y});
+            updateTempPath();
+            
+            // Auto-create waypoint at this position
+            const waypointId = `waypoint-${pathCounter}-${currentPathPoints.length}`;
+            const floor = document.getElementById('nodeFloor').value || 'mainjhsMap';
+            const view = document.getElementById('nodeView').value || 'mainjhs';
+            
+            const waypoint = {
+                id: waypointId,
+                name: `Waypoint ${pathCounter}-${currentPathPoints.length}`,
+                type: 'waypoint',
+                x,
+                y,
+                floor,
+                view,
+                hidden: true
+            };
+            nodes.push(waypoint);
+            
+            // Connect to previous waypoint
+            if (currentPathPoints.length > 1) {
+                const prevWaypointId = `waypoint-${pathCounter}-${currentPathPoints.length - 1}`;
+                connections.push([prevWaypointId, waypointId]);
+            }
+            
+            renderPins();
+        }
+        
+        function updateTempPath() {
+            const tempPath = document.getElementById('tempPath');
+            if (currentPathPoints.length > 0) {
+                const points = currentPathPoints.map(p => `${p.x},${p.y}`).join(' ');
+                tempPath.setAttribute('points', points);
+                tempPath.style.display = 'block';
+            }
+        }
+        
+        function finishPath() {
+            if (currentPathPoints.length < 2) {
+                // Cancel if less than 2 points
+                currentPathPoints.forEach((p, i) => {
+                    const waypointId = `waypoint-${pathCounter}-${i + 1}`;
+                    nodes = nodes.filter(n => n.id !== waypointId);
+                });
+            } else {
+                // Save the path
+                const floor = document.getElementById('nodeFloor').value || 'mainjhsMap';
+                
+                // Apply orthogonal transformation if enabled
+                const finalPoints = orthogonalMode ? makeOrthogonalPath(currentPathPoints) : currentPathPoints;
+                
+                paths.push({
+                    id: `path-${pathCounter}`,
+                    points: [...finalPoints],
+                    floor
+                });
+                pathCounter++;
+                renderPaths();
+            }
+            
+            isDrawingPath = false;
+            currentPathPoints = [];
+            document.getElementById('tempPath').style.display = 'none';
+            
+            renderConnections();
+            updateNodesList();
+            updateFloorCounts();
+        }
+        
+        // Render drawn paths
+        function renderPaths() {
+            const layer = document.getElementById('pathsLayer');
+            layer.innerHTML = '';
+            
+            paths.filter(p => p.floor === currentFloor).forEach((path, index) => {
+                const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                polyline.classList.add('path-line');
+                const points = path.points.map(p => `${p.x},${p.y}`).join(' ');
+                polyline.setAttribute('points', points);
+                polyline.addEventListener('click', () => deletePath(index));
+                layer.appendChild(polyline);
+                
+                // Add control points
+                path.points.forEach(point => {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.classList.add('path-point');
+                    circle.setAttribute('cx', point.x);
+                    circle.setAttribute('cy', point.y);
+                    circle.setAttribute('r', '4');
+                    layer.appendChild(circle);
+                });
+            });
+        }
+        
+        function deletePath(index) {
+            if (confirm('Delete this path?')) {
+                const path = paths[index];
+                paths.splice(index, 1);
+                
+                // Remove waypoints and connections for this path
+                const pathId = path.id;
+                nodes = nodes.filter(n => !n.id.startsWith(pathId.replace('path', 'waypoint')));
+                
+                renderPaths();
+                renderPins();
+                renderConnections();
+                updateNodesList();
+                updateFloorCounts();
+            }
+        }
+        
+        // Render pins
+        function renderPins() {
+            const layer = document.getElementById('pinsLayer');
+            layer.innerHTML = '';
+            
+            nodes.filter(n => n.floor === currentFloor).forEach(node => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.classList.add('pin-node');
+                if (node.type === 'emergency') g.classList.add('pin-emergency');
+                g.setAttribute('data-id', node.id);
+                
+                // Circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.classList.add('pin-circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', '10');
+                circle.setAttribute('fill', colorMap[node.type] || '#6b7280');
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '3');
+                
+                // Label
+                if (!node.hidden) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', node.x);
+                    text.setAttribute('y', node.y + 22);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('font-size', '11');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('fill', '#333');
+                    text.textContent = node.name;
+                    g.appendChild(text);
+                }
+                
+                g.appendChild(circle);
+                
+                // Event handlers
+                g.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handlePinClick(node.id);
+                });
+                
+                g.addEventListener('mousedown', (e) => {
+                    if (currentTool === 'select') {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        isDraggingNode = true;
+                        draggedNode = node.id;
+                    }
+                });
+                
+                layer.appendChild(g);
+            });
+            
+            // Update selected state
+            if (selectedNode) {
+                const selected = layer.querySelector(`[data-id="${selectedNode}"]`);
+                if (selected) selected.classList.add('selected');
+            }
+        }
+        
+        // Handle pin click
+        function handlePinClick(nodeId) {
+            if (currentTool === 'connect') {
+                if (!connectingFrom) {
+                    connectingFrom = nodeId;
+                    document.querySelector(`[data-id="${nodeId}"]`).classList.add('pin-connecting');
+                } else {
+                    if (connectingFrom !== nodeId) {
+                        connections.push([connectingFrom, nodeId]);
+                        renderConnections();
+                    }
+                    document.querySelector(`[data-id="${connectingFrom}"]`).classList.remove('pin-connecting');
+                    connectingFrom = null;
+                }
+            } else if (currentTool === 'select') {
+                selectNode(nodeId);
+            }
+        }
+        
+        // Select node
+        function selectNode(nodeId) {
+            selectedNode = nodeId;
+            const node = nodes.find(n => n.id === nodeId);
+            
+            console.log('selectNode called with:', nodeId, 'found:', node);
+            
+            if (node) {
+                // Populate form fields
+                document.getElementById('nodeId').value = node.id;
+                document.getElementById('nodeName').value = node.name;
+                document.getElementById('nodeType').value = node.type;
+                document.getElementById('nodeFloor').value = node.floor;
+                document.getElementById('nodeView').value = node.view || '';
+                document.getElementById('nodeHidden').checked = node.hidden || false;
+                
+                if (node.connectsToFloor) {
+                    document.getElementById('connectsToFloor').value = node.connectsToFloor;
+                } else {
+                    document.getElementById('connectsToFloor').value = '';
+                }
+                
+                if (node.connectsToView) {
+                    document.getElementById('connectsToView').value = node.connectsToView;
+                } else {
+                    document.getElementById('connectsToView').value = '';
+                }
+                
+                updatePinColor();
+                
+                // Visual feedback
+                document.querySelector('.sidebar-section:last-of-type .sidebar-title').textContent = 
+                    `📝 Editing: ${node.name || node.id}`;
+                document.querySelector('.sidebar-section:last-of-type .sidebar-title').style.color = '#22c55e';
+            }
+            
+            renderPins();
+            updateNodesList();
+        }
+        
+        // Mouse move for dragging
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingNode && draggedNode) {
+                const canvas = document.getElementById('editorCanvas');
+                const rect = canvas.getBoundingClientRect();
+                
+                // Convert screen coordinates to canvas coordinates accounting for zoom and pan
+                const canvasX = (e.clientX - rect.left) / scale;
+                const canvasY = (e.clientY - rect.top) / scale;
+                
+                // Clamp to canvas bounds
+                const x = Math.max(0, Math.min(2000, Math.round(canvasX)));
+                const y = Math.max(0, Math.min(1600, Math.round(canvasY)));
+                
+                const node = nodes.find(n => n.id === draggedNode);
+                if (node) {
+                    node.x = x;
+                    node.y = y;
+                    renderPins();
+                    renderConnections();
+                }
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDraggingNode = false;
+            draggedNode = null;
+        });
+        
+        // Render connections
+        function renderConnections() {
+            const layer = document.getElementById('connectionsLayer');
+            layer.innerHTML = '';
+            
+            connections.forEach(([fromId, toId], index) => {
+                const from = nodes.find(n => n.id === fromId);
+                const to = nodes.find(n => n.id === toId);
+                
+                if (from && to && from.floor === currentFloor && to.floor === currentFloor) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.classList.add('connection-line');
+                    line.setAttribute('x1', from.x);
+                    line.setAttribute('y1', from.y);
+                    line.setAttribute('x2', to.x);
+                    line.setAttribute('y2', to.y);
+                    line.addEventListener('click', () => deleteConnection(index));
+                    layer.appendChild(line);
+                }
+            });
+        }
+        
+        // Delete connection
+        function deleteConnection(index) {
+            if (confirm('Delete this connection?')) {
+                connections.splice(index, 1);
+                renderConnections();
+            }
+        }
+        
+        // Update selected node
+        function updateSelectedNode() {
+            console.log('updateSelectedNode called, selectedNode:', selectedNode);
+            
+            if (!selectedNode) {
+                alert('⚠️ No node selected! Click a node first, then update.');
+                return;
+            }
+            
+            const node = nodes.find(n => n.id === selectedNode);
+            console.log('Found node:', node);
+            
+            if (node) {
+                const oldValues = {...node};
+                const oldId = node.id;
+                const newId = document.getElementById('nodeId').value.trim();
+                
+                // Check if ID changed
+                if (oldId !== newId) {
+                    // Check if new ID already exists
+                    const duplicate = nodes.find(n => n.id === newId && n.id !== oldId);
+                    if (duplicate) {
+                        alert(`❌ Error: ID "${newId}" already exists! Choose a different ID.`);
+                        document.getElementById('nodeId').value = oldId;
+                        return;
+                    }
+                    
+                    // Confirm ID change
+                    const confirmChange = confirm(
+                        `⚠️ WARNING: You are changing the ID from "${oldId}" to "${newId}".\n\n` +
+                        `This will automatically update ALL connections that reference "${oldId}".\n\n` +
+                        `Are you sure you want to continue?`
+                    );
+                    
+                    if (!confirmChange) {
+                        document.getElementById('nodeId').value = oldId;
+                        return;
+                    }
+                    
+                    // Update the ID
+                    node.id = newId;
+                    
+                    // Update all connections that reference the old ID
+                    let connectionsUpdated = 0;
+                    connections.forEach((conn, i) => {
+                        if (conn[0] === oldId) {
+                            connections[i][0] = newId;
+                            connectionsUpdated++;
+                        }
+                        if (conn[1] === oldId) {
+                            connections[i][1] = newId;
+                            connectionsUpdated++;
+                        }
+                    });
+                    
+                    // Update selectedNode reference
+                    selectedNode = newId;
+                    
+                    console.log(`Updated ID from "${oldId}" to "${newId}". Updated ${connectionsUpdated} connection references.`);
+                    alert(`✅ ID changed from "${oldId}" to "${newId}"\n${connectionsUpdated} connection(s) updated.`);
+                }
+                
+                // Update other properties
+                node.name = document.getElementById('nodeName').value;
+                node.type = document.getElementById('nodeType').value;
+                node.floor = document.getElementById('nodeFloor').value;
+                node.view = document.getElementById('nodeView').value;
+                node.hidden = document.getElementById('nodeHidden').checked;
+                
+                const connectsTo = document.getElementById('connectsToFloor').value;
+                const connectsView = document.getElementById('connectsToView').value;
+                
+                if (connectsTo) {
+                    node.connectsToFloor = connectsTo;
+                } else {
+                    delete node.connectsToFloor;
+                }
+                
+                if (connectsView) {
+                    node.connectsToView = connectsView;
+                } else {
+                    delete node.connectsToView;
+                }
+                
+                console.log('Updated from:', oldValues, 'to:', node);
+                
+                renderPins();
+                renderConnections();
+                updateNodesList();
+                
+                if (oldId === newId) {
+                    alert('✅ Node updated successfully!');
+                }
+            }
+        }
+        
+        // Delete selected node
+        function deleteSelectedNode() {
+            if (!selectedNode) return;
+            
+            if (confirm('Delete this node?')) {
+                nodes = nodes.filter(n => n.id !== selectedNode);
+                connections = connections.filter(c => !c.includes(selectedNode));
+                selectedNode = null;
+                
+                renderPins();
+                renderConnections();
+                updateNodesList();
+                updateFloorCounts();
+            }
+        }
+        
+        // Update nodes list
+        function updateNodesList() {
+            const list = document.getElementById('nodesList');
+            const floorNodes = nodes.filter(n => n.floor === currentFloor);
+            
+            if (floorNodes.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #aaa;">No nodes</div>';
+                return;
+            }
+            
+            list.innerHTML = floorNodes.map(node => `
+                <div class="node-list-item ${selectedNode === node.id ? 'selected' : ''}" 
+                     onclick="selectNode('${node.id}')">
+                    <span>
+                        ${node.name}
+                        ${node.type === 'emergency' ? '<span class="node-emergency-badge">🚨 Exit</span>' : ''}
+                    </span>
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteNodeById('${node.id}')">×</button>
+                </div>
+            `).join('');
+        }
+        
+        function deleteNodeById(id) {
+            if (confirm('Delete this node?')) {
+                nodes = nodes.filter(n => n.id !== id);
+                connections = connections.filter(c => !c.includes(id));
+                if (selectedNode === id) selectedNode = null;
+                renderPins();
+                renderConnections();
+                updateNodesList();
+                updateFloorCounts();
+            }
+        }
+        
+        // Update floor counts
+        function updateFloorCounts() {
+            const floors = [...new Set(nodes.map(n => n.floor))];
+            floors.forEach(floor => {
+                const count = nodes.filter(n => n.floor === floor).length;
+                const badge = document.getElementById(`${floor}-count`);
+                if (badge) badge.textContent = count;
+            });
+        }
+        
+        // Update pin color based on type
+        function updatePinColor() {
+            const type = document.getElementById('nodeType').value;
+            const isFloorConnector = ['stairs', 'escalator', 'elevator', 'emergency'].includes(type);
+            document.getElementById('floorConnectionGroup').style.display = isFloorConnector ? 'block' : 'none';
+            document.getElementById('floorConnectionViewGroup').style.display = isFloorConnector ? 'block' : 'none';
+        }
+        
+        // Add new floor
+        function addNewFloor() {
+            const floorName = prompt('Enter floor name (e.g., Floor 3):');
+            if (!floorName) return;
+            
+            // Create floor ID with Map suffix
+            const floorId = prompt('Enter floor ID WITH "Map" suffix (e.g., floor3Map):', 
+                                   floorName.toLowerCase().replace(/\s+/g, '') + 'Map');
+            if (!floorId) return;
+            
+            // Check if floor already exists
+            if (document.querySelector(`[data-floor="${floorId}"]`)) {
+                alert('Floor already exists!');
+                return;
+            }
+            
+            // Add to floors list
+            const item = document.createElement('div');
+            item.className = 'floor-item';
+            item.setAttribute('data-floor', floorId);
+            item.innerHTML = `
+                <span class="floor-name">${floorName}</span>
+                <span class="floor-count" id="${floorId}-count">0</span>
+            `;
+            item.addEventListener('click', () => switchFloor(floorId));
+            document.getElementById('floorsList').appendChild(item);
+            
+            // Switch to new floor
+            switchFloor(floorId);
+        }
+        
+        // Delete floor
+        function deleteFloor(floorId) {
+            // Count nodes on this floor
+            const floorNodes = nodes.filter(n => n.floor === floorId);
+            
+            if (floorNodes.length === 0) {
+                const confirmed = confirm(`Delete floor "${floorId}"?`);
+                if (!confirmed) return;
+            } else {
+                const confirmed = confirm(
+                    `⚠️ WARNING: Delete floor "${floorId}"?\n\n` +
+                    `This will DELETE:\n` +
+                    `• ${floorNodes.length} node(s)\n` +
+                    `• All connections involving these nodes\n\n` +
+                    `This action CANNOT be undone!`
+                );
+                if (!confirmed) return;
+            }
+            
+            // Get node IDs on this floor
+            const nodeIds = new Set(floorNodes.map(n => n.id));
+            
+            // Remove nodes from this floor
+            nodes = nodes.filter(n => n.floor !== floorId);
+            
+            // Remove connections involving nodes from this floor
+            const oldConnectionCount = connections.length;
+            connections = connections.filter(([a, b]) => !nodeIds.has(a) && !nodeIds.has(b));
+            const removedConnections = oldConnectionCount - connections.length;
+            
+            // Remove floor tab
+            const floorItem = document.querySelector(`[data-floor="${floorId}"]`);
+            if (floorItem) {
+                floorItem.remove();
+            }
+            
+            // If this was the active floor, switch to first available floor
+            if (currentFloor === floorId) {
+                const firstFloor = document.querySelector('.floor-item');
+                if (firstFloor) {
+                    const newFloorId = firstFloor.dataset.floor;
+                    switchFloor(newFloorId);
+                } else {
+                    currentFloor = '';
+                }
+            }
+            
+            // Refresh display
+            renderPins();
+            renderPaths();
+            renderConnections();
+            updateNodesList();
+            updateFloorCounts();
+            
+            // Success message
+            alert(
+                `✅ Floor "${floorId}" deleted!\n\n` +
+                `Removed:\n` +
+                `• ${floorNodes.length} node(s)\n` +
+                `• ${removedConnections} connection(s)`
+            );
+        }
+        
+        // Switch floor
+        function switchFloor(floorId) {
+            currentFloor = floorId;
+            document.querySelectorAll('.floor-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.floor === floorId);
+            });
+            
+            // Update form fields to match current floor
+            document.getElementById('nodeFloor').value = floorId;
+            document.getElementById('nodeView').value = floorId.replace('Map', '');
+            
+            // Render background for this floor
+            renderFloorBackground();
+            
+            renderPins();
+            renderPaths();
+            renderConnections();
+            updateNodesList();
+        }
+        
+        // Upload SVG for specific floor
+        function uploadFloorSVG(floorId) {
+            currentUploadingFloor = floorId;
+            document.getElementById('floorSVGInput').click();
+        }
+        
+        // Handle floor SVG upload
+        document.getElementById('floorSVGInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUploadingFloor) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const svgContent = event.target.result;
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+                const svgElement = svgDoc.querySelector('svg');
+                
+                if (!svgElement) {
+                    alert('Invalid SVG file!');
+                    return;
+                }
+                
+                // Store the SVG content for this floor
+                floorBackgrounds[currentUploadingFloor] = svgContent;
+                
+                // Update the floor item to show it has an SVG
+                const floorItem = document.querySelector(`[data-floor="${currentUploadingFloor}"]`);
+                if (floorItem) {
+                    floorItem.classList.add('has-svg');
+                }
+                
+                // If this is the current floor, render it
+                if (currentUploadingFloor === currentFloor) {
+                    renderFloorBackground();
+                }
+                
+                // Success message
+                alert(`✅ SVG uploaded for ${currentUploadingFloor}!`);
+            };
+            reader.readAsText(file);
+            
+            // Reset
+            e.target.value = '';
+            currentUploadingFloor = null;
+        });
+        
+        // Render floor background SVG
+        function renderFloorBackground() {
+            const bgLayer = document.getElementById('bgLayer');
+            bgLayer.innerHTML = '';
+            
+            if (floorBackgrounds[currentFloor]) {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(floorBackgrounds[currentFloor], 'image/svg+xml');
+                const svgElement = svgDoc.querySelector('svg');
+                
+                if (svgElement) {
+                    // Extract all children from the uploaded SVG
+                    const children = Array.from(svgElement.children);
+                    children.forEach(child => {
+                        const clonedChild = child.cloneNode(true);
+                        bgLayer.appendChild(clonedChild);
+                    });
+                }
+            }
+        }
+        
+        // Upload SVG
+        function uploadSVG() {
+            document.getElementById('svgFileInput').click();
+        }
+        
+        document.getElementById('svgFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const svgContent = event.target.result;
+                const match = svgContent.match(/<svg[^>]*>(.*?)<\/svg>/s);
+                
+                if (match) {
+                    const bgLayer = document.getElementById('bgLayer');
+                    bgLayer.innerHTML = match[1];
+                    bgLayer.querySelectorAll('*').forEach(el => {
+                        el.style.opacity = '0.3';
+                        el.style.pointerEvents = 'none';
+                    });
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+        
+        // Zoom functions
+        function zoomIn() {
+            const rect = canvasArea.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const canvasX = (centerX - panX) / scale;
+            const canvasY = (centerY - panY) / scale;
+            
+            const newScale = Math.min(scale * 1.2, 5);
+            
+            panX = centerX - canvasX * newScale;
+            panY = centerY - canvasY * newScale;
+            scale = newScale;
+            
+            updateCanvasTransform();
+        }
+        
+        function zoomOut() {
+            const rect = canvasArea.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const canvasX = (centerX - panX) / scale;
+            const canvasY = (centerY - panY) / scale;
+            
+            const newScale = Math.max(scale / 1.2, 0.1);
+            
+            panX = centerX - canvasX * newScale;
+            panY = centerY - canvasY * newScale;
+            scale = newScale;
+            
+            updateCanvasTransform();
+        }
+        
+        function resetZoom() {
+            scale = 1;
+            initializeCanvas();
+        }
+        
+        // Import data
+        function importData() {
+            document.getElementById('importModal').classList.add('show');
+        }
+        
+        function processImport() {
+            try {
+                const locationsText = document.getElementById('importLocations').value.trim();
+                const connectionsText = document.getElementById('importConnections').value.trim();
+                
+                if (!locationsText && !connectionsText) {
+                    alert('⚠️ Please paste at least locations or connections data!');
+                    return;
+                }
+                
+                // Parse locations
+                if (locationsText) {
+                    let cleanedLocations = locationsText
+                        .replace(/const\s+locations\s*=\s*/i, '')
+                        .replace(/;?\s*$/, '');
+                    
+                    const importedLocations = eval('(' + cleanedLocations + ')');
+                    
+                    if (Array.isArray(importedLocations)) {
+                        // Store nodes exactly as imported - don't modify floor/view names
+                        nodes = importedLocations;
+                        
+                        // Update node counter
+                        const maxNum = Math.max(0, ...nodes
+                            .map(n => {
+                                const match = n.id.match(/node-(\d+)/);
+                                return match ? parseInt(match[1]) : 0;
+                            })
+                        );
+                        nodeCounter = maxNum + 1;
+                        
+                        // Extract floors and update UI
+                        const floors = [...new Set(nodes.map(n => n.floor))];
+                        floors.forEach(floor => {
+                            const floorWithoutMap = floor.replace('Map', '');
+                            if (!document.querySelector(`[data-floor="${floor}"]`)) {
+                                // Try to extract a nice name from the floor ID
+                                let floorName = floorWithoutMap;
+                                if (floorWithoutMap === 'mainjhs') floorName = 'Main JHS';
+                                else if (floorWithoutMap === 'groundjhs') floorName = 'Ground JHS';
+                                else if (floorWithoutMap.startsWith('floor')) {
+                                    const num = floorWithoutMap.replace('floor', '');
+                                    floorName = `Floor ${num}`;
+                                }
+                                addFloorProgrammatically(floor, floorName);
+                            }
+                        });
+                    }
+                }
+                
+                // Parse connections
+                if (connectionsText) {
+                    let cleanedConnections = connectionsText
+                        .replace(/const\s+connections\s*=\s*/i, '')
+                        .replace(/;?\s*$/, '');
+                    
+                    const importedConnections = eval('(' + cleanedConnections + ')');
+                    
+                    if (Array.isArray(importedConnections)) {
+                        connections = importedConnections;
+                    }
+                }
+                
+                // Render everything
+                renderPins();
+                renderPaths();
+                renderConnections();
+                updateNodesList();
+                updateFloorCounts();
+                
+                // Clear textareas and close
+                document.getElementById('importLocations').value = '';
+                document.getElementById('importConnections').value = '';
+                closeModal('importModal');
+                
+                alert(`✅ Import complete! ${nodes.length} nodes, ${connections.length} connections`);
+                
+            } catch (error) {
+                alert('❌ Error importing data! Please check the format.\n\n' + error.message);
+                console.error('Import error:', error);
+            }
+        }
+        
+        function addFloorProgrammatically(floorId, floorName) {
+            // Add to floors list
+            const item = document.createElement('div');
+            item.className = 'floor-item';
+            item.setAttribute('data-floor', floorId);
+            item.innerHTML = `
+                <span class="floor-name">${floorName}</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="floor-count" id="${floorId}-count">0</span>
+                    <button class="floor-upload-btn" onclick="event.stopPropagation(); uploadFloorSVG('${floorId}')" title="Upload SVG for this floor">📁</button>
+                    <button class="floor-delete-btn" onclick="event.stopPropagation(); deleteFloor('${floorId}')" title="Delete floor">×</button>
+                </div>
+            `;
+            item.addEventListener('click', () => switchFloor(floorId));
+            document.getElementById('floorsList').appendChild(item);
+        }
+        
+        // Copy floor nodes
+        function copyFloorNodes() {
+            // Populate FROM floor dropdown
+            const fromFloorSelect = document.getElementById('copyFromFloor');
+            fromFloorSelect.innerHTML = '';
+            
+            const floors = [...new Set(nodes.map(n => n.floor))];
+            floors.forEach(floor => {
+                const option = document.createElement('option');
+                option.value = floor;
+                option.textContent = floor.replace('Map', '');
+                fromFloorSelect.appendChild(option);
+            });
+            
+            document.getElementById('copyFloorModal').classList.add('show');
+        }
+        
+        function processCopyFloor() {
+            const fromFloor = document.getElementById('copyFromFloor').value;
+            const toFloor = document.getElementById('copyToFloor').value.trim();
+            const toView = document.getElementById('copyToView').value.trim();
+            const copyConns = document.getElementById('copyConnections').checked;
+            const updateIds = document.getElementById('updateNodeIds').checked;
+            
+            if (!fromFloor || !toFloor || !toView) {
+                alert('⚠️ Please fill in all fields!');
+                return;
+            }
+            
+            // Check if destination floor already has nodes
+            const existingNodes = nodes.filter(n => n.floor === toFloor);
+            if (existingNodes.length > 0) {
+                const confirmed = confirm(
+                    `⚠️ Floor "${toFloor}" already has ${existingNodes.length} node(s).\n\n` +
+                    `Do you want to add the copied nodes anyway?`
+                );
+                if (!confirmed) return;
+            }
+            
+            // Get nodes from source floor
+            const sourceNodes = nodes.filter(n => n.floor === fromFloor);
+            
+            if (sourceNodes.length === 0) {
+                alert(`❌ No nodes found on floor "${fromFloor}"!`);
+                return;
+            }
+            
+            // Create ID mapping (old ID -> new ID)
+            const idMap = {};
+            const suffix = updateIds ? `-${toView.replace(/[^a-z0-9]/gi, '')}` : '';
+            
+            // Copy nodes
+            const copiedNodes = [];
+            sourceNodes.forEach(node => {
+                const newId = updateIds ? `${node.id}${suffix}` : node.id;
+                idMap[node.id] = newId;
+                
+                // Check for duplicate IDs
+                if (nodes.find(n => n.id === newId)) {
+                    alert(`❌ Error: Node ID "${newId}" already exists! Enable "Update node IDs" to avoid duplicates.`);
+                    return;
+                }
+                
+                const copiedNode = {
+                    id: newId,
+                    name: node.name,
+                    type: node.type,
+                    x: node.x,
+                    y: node.y,
+                    floor: toFloor,
+                    view: toView,
+                    hidden: node.hidden || false
+                };
+                
+                // Don't copy floor connections (stairs/elevators)
+                // These need to be set up manually
+                
+                copiedNodes.push(copiedNode);
+            });
+            
+            // Add copied nodes to main array
+            nodes.push(...copiedNodes);
+            
+            // Copy connections if requested
+            let copiedConnections = 0;
+            if (copyConns) {
+                connections.forEach(([from, to]) => {
+                    // Only copy if BOTH nodes are in the source floor
+                    const fromInSource = sourceNodes.find(n => n.id === from);
+                    const toInSource = sourceNodes.find(n => n.id === to);
+                    
+                    if (fromInSource && toInSource) {
+                        const newFrom = idMap[from] || from;
+                        const newTo = idMap[to] || to;
+                        connections.push([newFrom, newTo]);
+                        copiedConnections++;
+                    }
+                });
+            }
+            
+            // Create floor tab if it doesn't exist
+            if (!document.querySelector(`[data-floor="${toFloor}"]`)) {
+                addFloorProgrammatically(toFloor, toView);
+            }
+            
+            // Switch to new floor
+            switchFloor(toFloor);
+            
+            // Refresh display
+            renderPins();
+            renderPaths();
+            renderConnections();
+            updateNodesList();
+            updateFloorCounts();
+            
+            // Close modal
+            closeModal('copyFloorModal');
+            
+            // Success message
+            alert(
+                `✅ Successfully copied ${copiedNodes.length} nodes` +
+                (copyConns ? ` and ${copiedConnections} connections` : '') +
+                ` from "${fromFloor}" to "${toFloor}"!\n\n` +
+                `The new floor has been created and is now active.`
+            );
+        }
+        
+        // Export code
+        function exportCode() {
+            // Debug: log first node to console
+            if (nodes.length > 0) {
+                console.log('First node:', nodes[0]);
+                console.log('Floor value:', nodes[0].floor);
+            }
+            
+            let code = '// === LOCATIONS ===\nconst locations = [\n';
+            
+            nodes.forEach((node, i) => {
+                code += '  {\n';
+                code += `    id: '${node.id}',\n`;
+                code += `    name: '${node.name}',\n`;
+                code += `    type: '${node.type}',\n`;
+                code += `    x: ${node.x},\n`;
+                code += `    y: ${node.y},\n`;
+                code += `    floor: '${node.floor}',\n`;
+                code += `    view: '${node.view}'`;
+                
+                if (node.hidden) code += ',\n    hidden: true';
+                
+                if (node.connectsToFloor) {
+                    code += `,\n    connectsToFloor: '${node.connectsToFloor}'`;
+                }
+                
+                if (node.connectsToView) {
+                    code += `,\n    connectsToView: '${node.connectsToView}'`;
+                }
+                
+                if (node.floorDirection) {
+                    code += `,\n    floorDirection: '${node.floorDirection}'`;
+                }
+                
+                code += '\n  }';
+                if (i < nodes.length - 1) code += ',';
+                code += '\n';
+            });
+            
+            code += '];\n\n// === CONNECTIONS ===\nconst connections = [\n';
+            
+            connections.forEach(([from, to], i) => {
+                code += `  ['${from}', '${to}']`;
+                if (i < connections.length - 1) code += ',';
+                code += '\n';
+            });
+            
+            code += '];\n';
+            
+            console.log('Exported code:', code);
+            
+            document.getElementById('exportCode').textContent = code;
+            document.getElementById('exportModal').classList.add('show');
+        }
+        
+        function exportWithSVGs() {
+            // Create a comprehensive export with SVG backgrounds
+            const exportData = {
+                nodes: nodes,
+                connections: connections,
+                paths: paths,
+                floorBackgrounds: floorBackgrounds
+            };
+            
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'navigation-data-complete.json';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            alert('✅ Complete navigation data (with SVG backgrounds) exported!');
+        }
+        
+        function copyExportCode() {
+            const code = document.getElementById('exportCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            });
+        }
+        
+        function importCompleteData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        
+                        // Import everything
+                        if (data.nodes) nodes = data.nodes;
+                        if (data.connections) connections = data.connections;
+                        if (data.paths) paths = data.paths;
+                        if (data.floorBackgrounds) {
+                            floorBackgrounds = data.floorBackgrounds;
+                            
+                            // Mark floors that have SVGs
+                            Object.keys(floorBackgrounds).forEach(floorId => {
+                                const floorItem = document.querySelector(`[data-floor="${floorId}"]`);
+                                if (floorItem) {
+                                    floorItem.classList.add('has-svg');
+                                }
+                            });
+                        }
+                        
+                        // Extract and create floor tabs
+                        const floors = [...new Set(nodes.map(n => n.floor))];
+                        floors.forEach(floor => {
+                            if (!document.querySelector(`[data-floor="${floor}"]`)) {
+                                const floorName = floor.replace('Map', '').replace(/-/g, ' ');
+                                addFloorProgrammatically(floor, floorName);
+                            }
+                        });
+                        
+                        // Render everything
+                        renderFloorBackground();
+                        renderPins();
+                        renderPaths();
+                        renderConnections();
+                        updateNodesList();
+                        updateFloorCounts();
+                        
+                        alert(`✅ Complete import successful!\n\nNodes: ${nodes.length}\nConnections: ${connections.length}\nFloors with SVGs: ${Object.keys(floorBackgrounds).length}`);
+                    } catch (err) {
+                        alert('❌ Error importing file: ' + err.message);
+                        console.error(err);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        
+        // Initialize
+        updatePinColor();
+        renderPins();
+        renderPaths();
+        renderConnections();
+        updateNodesList();
+        initializeCanvas();
+    </script>
+</body>
+</html>

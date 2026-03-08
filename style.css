@@ -1,0 +1,1545 @@
+/*************************************************
+ * BASE STYLES
+ * Global resets and foundational styles
+ *************************************************/
+    :root {
+        --text-muted: #64748b;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #e8f0f7 0%, #f4f7fb 100%);
+        color: #2c3e50;
+        letter-spacing: -0.3px;
+        font-weight: 400;
+    }
+
+    .container {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e8f0f7 0%, #f4f7fb 100%);
+    }
+
+/*************************************************
+ * SIDEBAR STYLES
+ * Navigation panel with controls and quick access
+ *************************************************/
+    .sidebar {
+        width: 360px;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08), 2px 0 8px rgba(0, 0, 0, 0.04);
+        overflow-y: auto;
+        padding: 48px 32px;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    /* Main sidebar heading */
+    .sidebar h1 {
+        font-size: 2rem;
+        color: really;
+        margin-bottom: 48px;
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -1px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+/*************************************************
+ * NAVIGATION CONTROLS
+ * Start/destination selectors and get directions button
+ *************************************************/
+    .controls {
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);
+        padding: 28px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Form group container */
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Form labels */
+    .form-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+    }
+
+    /* Dropdown selects and search input */
+    .form-group select,
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        color: #2c3e50;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Remove cursor: pointer from text input */
+    .form-group input[type="text"] {
+        cursor: text;
+    }
+
+/*************************************************
+ * SEARCHABLE DROPDOWN
+ * Custom dropdown with search functionality
+ *************************************************/
+    .searchable-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .searchable-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        background-color: #ffffff;
+        color: #2c3e50;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        cursor: text;
+    }
+
+    .searchable-input:hover {
+        border-color: #1e88e5;
+        background-color: #fafbff;
+        box-shadow: 0 4px 8px rgba(30, 136, 229, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+
+    .searchable-input:focus {
+        outline: none;
+        border-color: #1e88e5;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15), 0 4px 12px rgba(30, 136, 229, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        list-style: none;
+        margin-top: -2px;
+        max-height: 240px;
+        overflow-y: auto;
+        z-index: 100;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-list.hidden {
+        display: none;
+    }
+
+    .dropdown-list li {
+        padding: 12px 18px;
+        cursor: pointer;
+        color: #2c3e50;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dropdown-list li:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-list li:hover {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        font-weight: 600;
+        padding-left: 24px;
+    }
+
+    .dropdown-list li.selected {
+        background-color: #1976d2;
+        color: white;
+        font-weight: 600;
+    }
+
+    .dropdown-list .no-results {
+        padding: 20px 18px;
+        text-align: center;
+        color: #90a4ae;
+        cursor: default;
+    }
+
+    .dropdown-list .no-results:hover {
+        background-color: transparent;
+        padding-left: 18px;
+    }
+
+    /* Dropdown hover state */
+    .form-group select:hover,
+    .form-group input[type="text"]:hover {
+        border-color: #1e88e5;
+        background-color: #fafbff;
+        box-shadow: 0 4px 8px rgba(30, 136, 229, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+
+    /* Dropdown focus state */
+    .form-group select:focus,
+    .form-group input[type="text"]:focus {
+        outline: none;
+        border-color: #1e88e5;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15), 0 4px 12px rgba(30, 136, 229, 0.2);
+        transform: translateY(-1px);
+    }
+
+    /* Search input field */
+    /* (Handled by .searchable-input styling above) */
+
+    /* Ensure searchable dropdown is always visible */
+    .form-group:has(.searchable-input) {
+        display: block !important;
+        margin-bottom: 16px;
+    }
+
+    /* Primary action button */
+    .btn-primary {
+        width: 100%;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Button hover state with enhanced shadow */
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    /* Button active state */
+    .btn-primary:active {
+        background: linear-gradient(135deg, #0d47a1 0%, #0a3d91 100%);
+        box-shadow: 0 3px 8px rgba(25, 118, 210, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+        transform: translateY(0);
+    }
+
+/*************************************************
+ * QUICK ACCESS SECTION
+ * Shortcut buttons for common destinations
+ *************************************************/
+    .quick-access {
+        margin-bottom: 32px;
+        background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);
+        padding: 28px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Section heading */
+    .quick-access h3 {
+        font-size: 0.xrem;
+        color: #4a5568;
+        margin-bottom: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Quick access buttons */
+    .quick-btn {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        margin-bottom: 10px;
+        background-color: #ffffff;
+        color: #2c3e50;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: left;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    /* Quick button hover state */
+    .quick-btn:hover {
+        background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+        border-color: #1976d2;
+        color: #1565c0;
+        box-shadow: 0 4px 8px rgba(25, 118, 210, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+        transform: translateX(4px);
+    }
+
+    /* Quick button active state */
+    .quick-btn:active {
+        background-color: #bbdefb;
+        transform: translateX(2px);
+    }
+
+    .quick-btn:last-child {
+        margin-bottom: 0;
+    }
+
+/*************************************************
+ * VIEW CONTROLS
+ * Map view selection buttons
+ *************************************************/
+    .view-controls {
+        margin-bottom: 32px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);
+        padding: 28px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+        overflow-y: relative;
+    }
+
+    /* Section heading */
+    .view-controls h3 {
+        font-size: 0.75rem;
+        color: #4a5568;
+        margin-bottom: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* View selection buttons */
+    .view-btn {
+        display: block;
+        width: 100%;
+        padding: 13px 18px;
+        margin-bottom: 10px;
+        background-color: #ffffff;
+        color: #2c3e50;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: left;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* View button hover state */
+    .view-btn:hover {
+        background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+        border-color: #1976d2;
+        color: #1565c0;
+        box-shadow: 0 3px 8px rgba(25, 118, 210, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+        transform: translateX(2px);
+    }
+
+    /* Active view button state */
+    .view-btn.active {
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        color: white;
+        border-color: #1565c0;
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.35), 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+        transform: translateX(0);
+    }
+
+    /* Active button hover (darker) */
+    .view-btn.active:hover {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4), 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .view-btn:last-child {
+        margin-bottom: 0;
+    }
+
+/*************************************************
+ * INFO PANEL
+ * Displays route information and details
+ *************************************************/
+    .info-panel {
+        margin-top: auto;
+        padding: 24px;
+        background: linear-gradient(135deg, #e3f2fd 0%, #ede7f6 100%);
+        border-radius: 14px;
+        border-left: 5px solid #1976d2;
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.18), 0 2px 4px rgba(0, 0, 0, 0.08);
+        animation: slideInUp 0.3s ease;
+    }
+
+    .info-panel.hidden {
+        display: none;
+    }
+
+    /* Info panel heading */
+    .info-panel h3 {
+        font-size: 0.75rem;
+        color: #0d1b2a;
+        margin-bottom: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Info panel content */
+    #infoContent {
+        font-size: 0.95rem;
+        color: #4a5568;
+        line-height: 1.8;
+    }
+
+    #infoContent p {
+        margin-bottom: 12px;
+    }
+
+    #infoContent p:last-child {
+        margin-bottom: 0;
+    }
+
+    #infoContent strong {
+        color: #1565c0;
+        font-weight: 700;
+    }
+
+    /* Smooth entrance animation for info panel */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+/*************************************************
+ * MAIN CONTENT AREA
+ * Map display and toolbar
+ *************************************************/
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        overflow: hidden;
+    }
+
+/*************************************************
+ * TOOLBAR
+ * Zoom controls and map interactions
+ *************************************************/
+    .toolbar {
+        padding: 20px 32px;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+        position: relative;
+    }
+
+    /* Desktop toolbar: keep 'desktop-only' controls grouped on the right */
+    .toolbar .desktop-only:first-of-type {
+        margin-left: auto; /* push the desktop-only block to the right */
+    }
+
+    /* Make the desktop "Choose Map" look compact and match toolbar aesthetics */
+    .toolbar .mobile-map-btn.desktop-only {
+        background: #ffffff;
+        color: #0b1220;
+        border: 1px solid #e2e8f0;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-weight: 700;
+        box-shadow: 0 2px 6px rgba(2,6,23,0.06);
+        min-width: 96px;
+        white-space: nowrap;
+    }
+
+    /* Zoom control buttons */
+    .zoom-btn {
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 48px;
+        text-align: center;
+        box-shadow: 0 3px 8px rgba(25, 118, 210, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Zoom button hover state */
+    .zoom-btn:hover {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.35), 0 2px 4px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    /* Zoom button active state */
+    .zoom-btn:active {
+        background: linear-gradient(135deg, #0d47a1 0%, #0a3d91 100%);
+        box-shadow: 0 2px 6px rgba(25, 118, 210, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+        transform: translateY(0);
+    }
+
+/*************************************************
+ * EMERGENCY MODE
+ *************************************************/
+    .emergency-mode-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 16px;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        color: #f9fafb;
+        border: 2px solid #374151;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        letter-spacing: 0.01em;
+    }
+
+    .emergency-mode-btn:hover {
+        background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+        border-color: #dc2626;
+        color: #fef2f2;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    /* Active / ON state — pulsing red */
+    .emergency-mode-btn.emergency-active {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        border-color: #ef4444;
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(220, 38, 38, 0.45), 0 2px 6px rgba(0,0,0,0.2);
+        animation: emergency-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes emergency-pulse {
+        0%, 100% { box-shadow: 0 4px 16px rgba(220, 38, 38, 0.45), 0 2px 6px rgba(0,0,0,0.2); }
+        50%       { box-shadow: 0 4px 28px rgba(220, 38, 38, 0.75), 0 2px 8px rgba(0,0,0,0.25); }
+    }
+
+    .emergency-icon { font-size: 1.1rem; }
+
+    /* Compact on mobile — hide text label */
+    @media (max-width: 768px) {
+        .emergency-label { display: none; }
+        .emergency-mode-btn { padding: 10px 12px; }
+    }
+
+    /* Emergency banner — full-width strip below toolbar */
+    .emergency-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+        color: #fef2f2;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-bottom: 2px solid #dc2626;
+        animation: banner-slide-in 0.3s ease;
+        position: relative;
+        z-index: 10;
+    }
+
+    .emergency-banner.hidden { display: none !important; }
+
+    @keyframes banner-slide-in {
+        from { transform: translateY(-100%); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .emergency-banner-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    .emergency-banner span:not(.emergency-banner-icon) { flex: 1; }
+
+    .emergency-banner-dismiss {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #fef2f2;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s;
+    }
+
+    .emergency-banner-dismiss:hover { background: rgba(255,255,255,0.25); }
+
+/*************************************************
+ * FLOOR SELECTOR
+ * Floor selection for multi-floor buildings
+ *************************************************/
+    .floor-selector {
+        padding: 16px 32px;
+        background: linear-gradient(180deg, #f8f9fb 0%, #ffffff 100%);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .floor-selector.hidden {
+        display: none;
+    }
+
+    /* Floor selector label */
+    .floor-selector label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #4a5568;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 8px;
+    }
+
+    /* Floor buttons container */
+    .floor-buttons-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1;
+        align-items: center;
+    }
+
+    /* Floor selector button */
+    .floor-btn {
+        padding: 10px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        background-color: #ffffff;
+        color: #2c3e50;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        white-space: nowrap;
+    }
+
+    /* Floor button hover state */
+    .floor-btn:hover {
+        border-color: #1e88e5;
+        background-color: #fafbff;
+        box-shadow: 0 3px 8px rgba(30, 136, 229, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+
+    /* Floor button active state */
+    .floor-btn.active {
+        background-color: #1e88e5;
+        color: #ffffff;
+        border-color: #1565c0;
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08);
+        font-weight: 600;
+    }
+
+    /* Floor button active hover state */
+    .floor-btn.active:hover {
+        background-color: #1565c0;
+        border-color: #0d47a1;
+        box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35), 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Floor button focus state */
+    .floor-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15), 0 3px 8px rgba(30, 136, 229, 0.15);
+    }
+
+    /* Current zoom level display */
+    .zoom-level {
+        margin-left: 18px;
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        color: #4a5568;
+        font-weight: 700;
+        min-width: 70px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        background-color: #f1f5f9;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+    }
+
+/*************************************************
+ * MAP WRAPPER
+ * SVG map display container with pan/zoom
+ *************************************************/
+    .map-wrapper {
+        flex: 1;
+        overflow: auto;
+        background: radial-gradient(circle at center, #ffffff 0%, #f8f9fa 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: grab;
+        padding: 20px;
+
+        /* Improve touch handling on mobile */
+        touch-action: none; /* disable default browser panning so we can handle gestures */
+        -webkit-user-select: none;
+        user-select: none;
+        overscroll-behavior: contain; /* prevent pull-to-refresh when panning near edge */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Dragging cursor state */
+    .map-wrapper.dragging {
+        cursor: grabbing;
+    }
+
+    /* Helper: disable text selection on drag */
+    .no-select {
+        -webkit-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+
+    /* SVG floor maps */
+    .floor-map {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform-origin: 0 0; /* prefer top-left for easier math */
+        transition: none; /* transforms are driven by rAF for smoother results */
+        will-change: transform;
+        display: none;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+        -webkit-tap-highlight-color: transparent;
+        backface-visibility: hidden;
+    }
+
+    /* Active map display */
+    .floor-map.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* Animated dashed stroke (moving effect) */
+    @keyframes dash {
+        from { stroke-dashoffset: 0; }
+        to { stroke-dashoffset: -1000; }
+    }
+
+    /* moving dot that follows the path */
+    .moving-dot {
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+        pointer-events: none;
+    }
+
+    /* Smooth fade in for map switching */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Background for SHS building map */
+    .bgtest {
+        fill: #c8e6c9;
+    }
+
+/*************************************************
+ * CUSTOM SCROLLBARS
+ * Styled scrollbars for sidebar and map
+ *************************************************/
+    .sidebar::-webkit-scrollbar,
+    .map-wrapper::-webkit-scrollbar,
+    .view-controls::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-track,
+    .map-wrapper::-webkit-scrollbar-track,
+    .view-controls::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb,
+    .map-wrapper::-webkit-scrollbar-thumb,
+    .view-controls::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #cbd5e0 0%, #a0aec0 100%);
+        border-radius: 10px;
+        border: 2px solid #f1f5f9;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover,
+    .map-wrapper::-webkit-scrollbar-thumb:hover,
+    .view-controls::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #a0aec0 0%, #94a3b8 100%);
+    }
+
+/*************************************************
+ * MOBILE MENU TOGGLE
+ * Hamburger menu button for mobile devices
+ *************************************************/
+    .mobile-menu-toggle {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 12px;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        z-index: 1001;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:active {
+        transform: scale(0.95);
+    }
+
+    .mobile-menu-toggle span {
+        width: 24px;
+        height: 2.5px;
+        background: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        display: block;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(10px, 10px);
+    }
+
+    .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    .sidebar-close {
+        display: none;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #0d1b2a;
+        cursor: pointer;
+        padding: 8px;
+        width: 44px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-close:hover {
+        transform: scale(1.1);
+    }
+
+/*************************************************
+ * RESPONSIVE DESIGN
+ * Mobile and tablet optimizations
+ *************************************************/
+    @media (max-width: 1024px) {
+        .sidebar {
+            width: 300px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
+            padding-bottom: 70px;
+        }
+
+        .mobile-menu-toggle {
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            max-width: 320px;
+            height: 100vh;
+            max-height: none;
+            border-bottom: none;
+            border-right: 2px solid #e2e8f0;
+            padding: 70px 24px 24px 24px;
+            z-index: 1100; /* raised so it overlays floating map controls */
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-close {
+            display: flex;
+        }
+
+        .main-content {
+            height: calc(100vh - 70px);
+            width: 100%;
+            position: relative;
+        }
+
+        .sidebar h1 {
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            font-weight: 800;
+            margin-top: 10px;
+           color: #3d86d3;
+        }
+
+        .controls,
+        .quick-access {
+            margin-bottom: 20px;
+            padding: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group select {
+            padding: 12px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+        }
+
+        .quick-btn {
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .view-controls {
+            margin-bottom: 20px;
+            max-height: none;
+            padding: 18px;
+        }
+
+        .view-controls h3 {
+            margin-bottom: 14px;
+        }
+
+        .view-btn {
+            padding: 11px 14px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .toolbar {
+            padding: 12px 16px;
+            gap: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            padding: 8px 12px;
+            min-width: auto;
+            font-size: 0.85rem;
+            flex: 0 0 auto;
+            width: auto;
+            margin: 0;
+        }
+
+        .zoom-level {
+            margin-left: 0;
+            padding: 6px 8px;
+            font-size: 0.7rem;
+            min-width: auto;
+            order: 0;
+            flex: 0 0 auto;
+            text-align: center;
+        }
+
+        .floor-selector {
+            padding: 12px 16px;
+            gap: 10px;
+        }
+
+        .floor-selector label {
+            font-size: 0.8rem;
+        }
+
+        .floor-btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding-bottom: 65px;
+        }
+
+        .main-content {
+            height: calc(100vh - 65px);
+        }
+
+        .sidebar {
+            max-width: 100%;
+            padding: 60px 18px 18px 18px;
+        }
+
+        .mobile-menu-toggle {
+            width: 44px;
+            height: 44px;
+            top: 12px;
+            left: 12px;
+        }
+
+        .sidebar-close {
+            right: 12px;
+            top: 12px;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+        }
+
+        .sidebar h1 {
+            font-size: 1.2rem;
+            margin-bottom: 18px;
+        }
+
+        .controls,
+        .quick-access,
+        .view-controls,
+        .info-panel {
+            margin-bottom: 16px;
+            padding: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.7rem;
+        }
+
+        .form-group select {
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            padding: 12px 14px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .quick-btn {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+
+        .view-btn {
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+
+        .toolbar {
+            padding: 10px 12px;
+            gap: 6px;
+        }
+
+        .zoom-btn {
+            padding: 8px 10px;
+            min-width: 32px;
+            font-size: 0.85rem;
+        }
+
+        .zoom-level {
+            margin-left: 4px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            min-width: 50px;
+        }
+
+        .floor-selector {
+            padding: 10px 12px;
+            gap: 8px;
+        }
+
+        .floor-selector label {
+            font-size: 0.75rem;
+        }
+
+        .floor-buttons-container {
+            gap: 6px;
+        }
+
+        .floor-btn {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Mobile in-map controls (responsive bottom bar) */
+        .mobile-map-bar {
+            position: fixed;
+            left: 14px;
+            right: 14px;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            display: none; /* default hidden on desktop */
+            gap: 10px;
+            z-index: 1002;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.98);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            transition: transform 0.18s ease, opacity 0.18s ease;
+            flex-wrap: wrap;
+            max-width: calc(100% - 28px);
+            margin: 0 auto;
+        }
+
+        .mobile-map-bar.vertical {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .mobile-map-bar.compact {
+            padding: 6px;
+            border-radius: 999px;
+            width: auto;
+            right: 12px;
+            left: auto;
+        }
+
+        .mobile-map-btn {
+            flex: 1 1 auto;
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            min-width: 0; /* allow flex and wrapping */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mobile-map-bar.compact .mobile-map-btn {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Floor navigation buttons (prev / next) inside the map */
+        .floor-nav {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            z-index: 900; /* lower so the sidebar can overlay it */
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 6px 8px;
+            box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+            transition: transform 0.12s ease, opacity 0.12s ease;
+        }
+        .floor-nav.hidden { display: none !important; opacity: 0; transform: translateY(-4px); }
+        .floor-nav-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #102a43;
+            min-width: 120px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .floor-nav-btn {
+            border: 0;
+            background: #f1f5f9;
+            color: #102a43;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .floor-nav-btn[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Desktop/tablet landscape: move the floating floor nav slightly below the toolbar so it doesn't visually collide */
+        @media (min-width: 769px) {
+            .floor-nav {
+                top: 72px; /* sits below the toolbar */
+                right: 18px;
+                padding: 8px 10px;
+            }
+            .floor-nav-label { min-width: 140px; font-size: 0.9rem; }
+            .floor-nav-btn { padding: 8px 10px; }
+        }
+
+        .mobile-get-btn {
+            flex: 0 0 auto;
+            padding: 12px 14px;
+            white-space: nowrap;
+        }
+
+        /* Directions-specific floor nav (visible whenever a route is active) */
+        .directions-floor-nav {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(255,255,255,0.98);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            z-index: 1003;
+            transition: transform 0.12s ease, opacity 0.12s ease;
+            min-width: 220px;
+        }
+
+        /* On desktop keep the directions nav near the main floor nav (top-right) so it doesn't get lost at bottom */
+        @media (min-width: 769px) {
+            .directions-floor-nav {
+                /* place the directions nav below the floating floor-nav and well below the toolbar */
+                top: 120px;
+                bottom: auto;
+                right: 18px;
+                min-width: 220px;
+            }
+        }
+
+        .directions-floor-nav.hidden { display: none !important; opacity: 0; transform: translateY(6px); }
+
+        .dir-nav-btn {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #1f2937;
+            transition: background 0.15s, color 0.12s;
+        }
+        .dir-nav-btn:hover:not(:disabled) { background: rgba(16, 42, 67, 0.06); }
+        .dir-nav-btn:focus { outline: 2px solid #1976d2; outline-offset: 2px; }
+        .dir-nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+        .dir-floor-label {
+            font-weight: 600;
+            color: #0b1220;
+            font-size: 0.85rem;
+            min-width: 160px;
+            max-width: 260px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .dir-nav-map-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #1976d2;
+        }
+
+        .dir-nav-map-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #0b1220;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Mobile in-map controls are shown only on small touch devices when not .hidden */
+        @media (max-width: 768px) {
+            .mobile-map-bar:not(.hidden) {
+                display: flex;
+            }
+        }
+
+        /* Strong hidden rule: ensure the bar is never visible on desktop even if JS accidentally toggles classes */
+        .mobile-map-bar.hidden {
+            display: none !important;
+        }
+
+        /* Narrow/small phone tweaks */
+        @media (max-width: 420px) {
+            .mobile-map-bar:not(.hidden) {
+                left: 10px;
+                right: 10px;
+            }
+            .mobile-map-bar.vertical:not(.hidden) {
+                bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mobile-map-bar:not(.hidden) {
+                justify-content: flex-end;
+            }
+            .mobile-map-bar.compact:not(.hidden) {
+                padding: 8px;
+                right: 10px;
+                left: auto;
+            }
+        }
+
+    /* Mobile picker modal - completely removed from document flow, never visible on desktop */
+    .mobile-modal {
+        position: fixed;
+        inset: 0;
+        display: none; /* default hidden */
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.45);
+        z-index: 9999;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    /* Strong hidden rule to avoid accidental showing */
+    .mobile-modal.hidden {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* Allow modal to show only on mobile when explicitly opened */
+    @media (max-width: 768px) {
+        .mobile-modal:not(.hidden) {
+            display: flex !important;
+        }
+    }
+
+    /* Show mobile UI only on small screens when not .hidden */
+    @media (max-width: 768px) {
+        .mobile-map-bar:not(.hidden) {
+            display: flex;
+        }
+    }
+
+    .mobile-modal-inner {
+        background: #fff;
+        padding: 18px;
+        border-radius: 12px;
+        width: min(96%, 420px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .mobile-modal-inner h3 {
+        margin-bottom: 12px;
+        font-size: 1rem;
+    }
+
+    .mobile-map-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .mobile-map-options button {
+        flex: 1 1 auto;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    /* Ensure mobile-only UI is fully hidden on desktop (prevents accidental reveal on scroll) */
+    @media (min-width: 769px) {
+        .mobile-map-bar,
+        .mobile-map-bar:not(.hidden),
+        .mobile-modal,
+        .mobile-modal:not(.hidden),
+        .mobile-modal-inner,
+        #mobileMapBar,
+        #mobileClearRouteBtn,
+        .mobile-clear-btn {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
+    }
+
+    /* Additional desktop detection for devices with fine pointer + hover (typical desktops) */
+    @media (hover: hover) and (pointer: fine) {
+        .mobile-map-bar,
+        .mobile-map-bar:not(.hidden),
+        .mobile-modal,
+        .mobile-modal:not(.hidden),
+        .mobile-modal-inner,
+        #mobileMapBar,
+        #mobileClearRouteBtn,
+        .mobile-clear-btn {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
+    }
+
+    .btn-secondary {
+        padding: 10px 12px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+        margin-top: 10px; /* separate from primary action */
+    }
+
+    /* Sidebar: make the Clear Route in the controls match primary width/visual weight */
+    .controls .btn-secondary {
+        width: 100%;
+        margin-top: 12px;
+        padding: 14px 18px;
+        border-width: 2px;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        border-color: #e2e8f0;
+        box-shadow: 0 2px 8px rgba(2,6,23,0.03);
+    }
+
+    /* Mobile clear button small adjustments */
+    .mobile-clear-btn { margin-left: 8px; }
+
+    .mobile-get-btn {
+        margin-left: 10px;
+        flex: 0 0 auto;
+        padding: 12px 14px;
+    }
+
+    .info-panel {
+        margin-top: auto;
+    }
+
+    .info-panel h3 {
+        font-size: 0.7rem;
+    }
+
+    #infoContent {
+        font-size: 0.85rem;
+    }
+
+    /* Desktop-only helpers */
+    .desktop-only { display: none; }
+    @media (min-width: 769px) {
+        .desktop-only { display: inline-block; margin-left: 12px; }
+    }
+
+    /* Firefox scrollbar styling */
+    .sidebar,
+    .map-wrapper,
+    .view-controls {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 #f1f5f9;
+    }
+    }
